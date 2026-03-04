@@ -1,0 +1,11 @@
+{
+  "/(storefront)/products/page": "app/(storefront)/products/page.js",
+  "/(storefront)/products/[slug]/page": "app/(storefront)/products/[slug]/page.js",
+  "/api/checkout/quote/route": "app/api/checkout/quote/route.js",
+  "/api/checkout/create-session/route": "app/api/checkout/create-session/route.js",
+  "/api/webhooks/stripe/route": "app/api/webhooks/stripe/route.js",
+  "/(checkout)/success/page": "app/(checkout)/success/page.js",
+  "/(checkout)/checkout/page": "app/(checkout)/checkout/page.js",
+  "/(admin)/admin/page": "app/(admin)/admin/page.js",
+  "/(admin)/admin/customers/page": "app/(admin)/admin/customers/page.js"
+}
