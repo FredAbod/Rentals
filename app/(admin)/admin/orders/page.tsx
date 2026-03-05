@@ -4,6 +4,10 @@ import { Customer } from "@/lib/models/Customer";
 
 export default async function AdminOrdersPage() {
   await getMongooseConnection();
+
+  // Ensure Customer model is registered for populate
+  void Customer;
+
   const orders = await Order.find()
     .populate("customerId")
     .sort({ createdAt: -1 })
