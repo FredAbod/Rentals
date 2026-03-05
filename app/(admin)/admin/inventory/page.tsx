@@ -1,5 +1,8 @@
 import { getMongooseConnection } from "@/lib/db/mongoose";
 import { InventoryInstance } from "@/lib/models/InventoryInstance";
+import "@/lib/models/Product"; // Ensure Product schema is registered for populate
+
+export const dynamic = "force-dynamic";
 
 export default async function AdminInventoryPage() {
   await getMongooseConnection();

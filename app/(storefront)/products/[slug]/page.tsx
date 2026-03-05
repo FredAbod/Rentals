@@ -9,7 +9,7 @@ import { Product } from "@/lib/models/Product";
 
 const ProductViewerR3F = dynamic(
   () => import("@/components/3d/ProductViewerR3F"),
-  { ssr: false }
+  { ssr: false },
 );
 
 async function getProduct(slug: string) {
@@ -19,7 +19,7 @@ async function getProduct(slug: string) {
     notFound();
   }
   return {
-    id: product._id.toString(),
+    id: (product as any)._id.toString(),
     name: product.name,
     slug: product.slug,
     description: product.description,
@@ -72,15 +72,20 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
               {product.name}
             </h1>
-            <p className="max-w-2xl text-sm text-white/70">{product.description}</p>
+            <p className="max-w-2xl text-sm text-white/70">
+              {product.description}
+            </p>
           </article>
         </section>
         <aside className="space-y-6">
           <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-            <h2 className="text-sm font-semibold text-white">Booking summary</h2>
+            <h2 className="text-sm font-semibold text-white">
+              Booking summary
+            </h2>
             <p className="mt-2 text-xs text-white/70">
-              Choose your dates and delivery postcode at checkout. The system will only
-              confirm if every physical unit is available for the full range.
+              Choose your dates and delivery postcode at checkout. The system
+              will only confirm if every physical unit is available for the full
+              range.
             </p>
             <dl className="mt-4 space-y-2 text-xs text-white/70">
               <div className="flex items-center justify-between">
@@ -110,4 +115,3 @@ export default async function ProductPage({ params }: ProductPageProps) {
     </div>
   );
 }
-

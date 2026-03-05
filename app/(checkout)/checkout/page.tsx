@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 interface QuoteState {
@@ -20,6 +20,20 @@ function formatMoney(minor: number) {
 }
 
 export default function CheckoutPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="mx-auto max-w-4xl px-6 pb-16 pt-10 text-white/50">
+          Loading checkout…
+        </div>
+      }
+    >
+      <CheckoutInner />
+    </Suspense>
+  );
+}
+
+function CheckoutInner() {
   const searchParams = useSearchParams();
   const productIdFromUrl = searchParams.get("productId") ?? "";
   const productName = searchParams.get("productName") ?? "Rental Equipment"; // We'll pass the exact name later if needed
@@ -31,7 +45,7 @@ export default function CheckoutPage() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [quantity, setQuantity] = useState(1);
-  const [baseDailyRateMinor, setBaseDailyRateMinor] = useState(4500); // For demo purposes, we fetch the real price in a full app
+  const [baseDailyRateMinor] = useState(4500); // For demo purposes, we fetch the real price in a full app
   const [damageWaiverSelected, setDamageWaiverSelected] = useState(true);
 
   const [quote, setQuote] = useState<QuoteState | null>(null);

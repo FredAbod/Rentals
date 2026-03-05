@@ -19,7 +19,7 @@ declare global {
 
 const globalCache = global.mongooseCache ?? {
   conn: null,
-  promise: null
+  promise: null,
 };
 
 global.mongooseCache = globalCache;
@@ -36,14 +36,13 @@ export async function getMongooseConnection(): Promise<typeof mongoose> {
   }
 
   if (!globalCache.promise) {
-    globalCache.promise = mongoose.connect(MONGODB_URI, {
+    globalCache.promise = mongoose.connect(MONGODB_URI as string, {
       // These options are safe defaults for MongoDB Atlas.
       autoIndex: true,
-      maxPoolSize: 10
+      maxPoolSize: 10,
     });
   }
 
   globalCache.conn = await globalCache.promise;
   return globalCache.conn;
 }
-

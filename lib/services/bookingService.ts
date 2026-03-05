@@ -3,7 +3,7 @@ import { getMongooseConnection } from "@/lib/db/mongoose";
 import { Product, type ProductDocument } from "@/lib/models/Product";
 import {
   InventoryInstance,
-  type InventoryInstanceDocument
+  type InventoryInstanceDocument,
 } from "@/lib/models/InventoryInstance";
 import { Order, type OrderDocument } from "@/lib/models/Order";
 import { Customer, type CustomerDocument } from "@/lib/models/Customer";
@@ -56,8 +56,12 @@ export interface CreateBookingArgs {
 
 function getInclusiveDateRange(start: Date, end: Date): Date[] {
   const dates: Date[] = [];
-  const current = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate()));
-  const endUtc = new Date(Date.UTC(end.getUTCFullYear(), end.getUTCMonth(), end.getUTCDate()));
+  const current = new Date(
+    Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), start.getUTCDate()),
+  );
+  const endUtc = new Date(
+    Date.UTC(end.getUTCFullYear(), end.getUTCMonth(), end.getUTCDate()),
+  );
   while (current <= endUtc) {
     dates.push(new Date(current));
     current.setUTCDate(current.getUTCDate() + 1);
@@ -72,7 +76,7 @@ function getInclusiveDateRange(start: Date, end: Date): Date[] {
  * guarantee that no two overlapping bookings can reserve more units than exist.
  */
 export async function createBookingWithTransaction(
-  args: CreateBookingArgs
+  args: CreateBookingArgs,
 ): Promise<OrderDocument> {
   const conn = await getMongooseConnection();
   const session = await conn.startSession();
@@ -85,7 +89,7 @@ export async function createBookingWithTransaction(
       const existingCustomer = await Customer.findOne(
         { email: args.customer.email },
         null,
-        { session }
+        { session },
       );
 
       let customerDoc: CustomerDocument;
@@ -99,26 +103,24 @@ export async function createBookingWithTransaction(
               email: args.customer.email,
               firstName: args.customer.firstName,
               lastName: args.customer.lastName,
-              phone: args.customer.phone
-            }
+              phone: args.customer.phone,
+            },
           ],
-          { session }
+          { session },
         ).then((res) => res[0]);
       }
 
       // 2. Load all referenced products.
-      const productIds = args.items.map((item) =>
-        new mongoose.Types.ObjectId(item.productId)
+      const productIds = args.items.map(
+        (item) => new mongoose.Types.ObjectId(item.productId),
       );
-      const products = await Product.find(
-        { _id: { $in: productIds } },
-        null,
-        { session }
-      );
+      const products = await Product.find({ _id: { $in: productIds } }, null, {
+        session,
+      });
 
       const productMap = new Map<string, ProductDocument>();
       for (const product of products) {
-        productMap.set(product._id.toHexString(), product);
+        productMap.set((product as any)._id.toHexString(), product);
       }
 
       if (productMap.size !== productIds.length) {
@@ -139,33 +141,38 @@ export async function createBookingWithTransaction(
 
         for (const date of dates) {
           const dateUtc = new Date(
-            Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
+            Date.UTC(
+              date.getUTCFullYear(),
+              date.getUTCMonth(),
+              date.getUTCDate(),
+            ),
           );
 
           // We guard the increment by asserting that reservedQuantity <= maxAllowedBeforeIncrement.
-          const maxAllowedBeforeIncrement = product.totalQuantity - item.quantity;
+          const maxAllowedBeforeIncrement =
+            product.totalQuantity - item.quantity;
 
           const filter = {
-            productId: product._id,
+            productId: (product as any)._id,
             date: dateUtc,
-            reservedQuantity: { $lte: maxAllowedBeforeIncrement }
+            reservedQuantity: { $lte: maxAllowedBeforeIncrement },
           };
 
           const update = {
-            $inc: { reservedQuantity: item.quantity }
+            $inc: { reservedQuantity: item.quantity },
           };
 
           const options = {
             upsert: true,
             new: true,
-            session
+            session,
           } as const;
 
-          const result = await InventoryInstance.findOneAndUpdate(
+          const result = (await InventoryInstance.findOneAndUpdate(
             filter,
             update,
-            options
-          ) as InventoryInstanceDocument | null;
+            options,
+          )) as InventoryInstanceDocument | null;
 
           // If result is null, the conditional filter failed (oversubscription / race condition).
           if (!result) {
@@ -178,27 +185,27 @@ export async function createBookingWithTransaction(
       const rentalStartDate = new Date(
         args.items
           .map((i) => new Date(i.startDate).getTime())
-          .reduce((a, b) => Math.min(a, b))
+          .reduce((a, b) => Math.min(a, b)),
       );
       const rentalEndDate = new Date(
         args.items
           .map((i) => new Date(i.endDate).getTime())
-          .reduce((a, b) => Math.max(a, b))
+          .reduce((a, b) => Math.max(a, b)),
       );
 
       const orderDoc = await Order.create(
         [
           {
-            customerId: customerDoc._id,
+            customerId: (customerDoc as any)._id,
             items: args.items.map((item) => {
               const product = productMap.get(item.productId)!;
               return {
-                productId: product._id,
+                productId: (product as any)._id,
                 nameSnapshot: product.name,
                 quantity: item.quantity,
                 unitPriceMinor: product.baseDailyRateMinor,
                 startDate: new Date(item.startDate),
-                endDate: new Date(item.endDate)
+                endDate: new Date(item.endDate),
               };
             }),
             status: "confirmed",
@@ -227,12 +234,12 @@ export async function createBookingWithTransaction(
               {
                 type: "order_created",
                 message: "Order created and inventory reserved.",
-                createdAt: new Date()
-              }
-            ]
-          }
+                createdAt: new Date(),
+              },
+            ],
+          },
         ],
-        { session }
+        { session },
       );
 
       createdOrder = orderDoc[0];
@@ -247,4 +254,3 @@ export async function createBookingWithTransaction(
     await session.endSession();
   }
 }
-

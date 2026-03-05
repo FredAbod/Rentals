@@ -7,7 +7,7 @@ async function getProducts() {
   await getMongooseConnection();
   const products = await Product.find({}).sort({ name: 1 }).lean();
   return products.map((p) => ({
-    id: p._id.toString(),
+    id: (p as any)._id.toString(),
     name: p.name,
     slug: p.slug,
     description: p.description,
@@ -28,8 +28,8 @@ export default async function ProductsPage() {
           Collections
         </h1>
         <p className="mt-3 max-w-xl text-sm text-white/60">
-          Browse our party and event rentals. All items are available for same-week
-          delivery across Greater London.
+          Browse our party and event rentals. All items are available for
+          same-week delivery across Greater London.
         </p>
       </header>
 
@@ -67,13 +67,17 @@ export default async function ProductsPage() {
                 <p className="text-xs font-medium uppercase tracking-wider text-accent">
                   {product.category}
                 </p>
-                <h2 className="mt-2 font-semibold text-white">{product.name}</h2>
+                <h2 className="mt-2 font-semibold text-white">
+                  {product.name}
+                </h2>
                 <p className="mt-2 line-clamp-2 text-sm text-white/60">
                   {product.description}
                 </p>
                 <p className="mt-4 text-sm font-medium text-white">
                   £{(product.baseDailyRateMinor / 100).toFixed(2)}
-                  <span className="ml-1 text-xs font-normal text-white/50">/ day</span>
+                  <span className="ml-1 text-xs font-normal text-white/50">
+                    / day
+                  </span>
                 </p>
               </div>
             </Link>
