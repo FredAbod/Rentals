@@ -29,6 +29,8 @@ global.mongooseCache = globalCache;
  * do not create multiple parallel Mongoose connections on Vercel.
  *
  * It caches the connection object across invocations where possible.
+ * If the connection fails, the cached promise is cleared so the next
+ * invocation can retry instead of reusing a rejected promise.
  */
 export async function getMongooseConnection(): Promise<typeof mongoose> {
   if (globalCache.conn) {
@@ -36,11 +38,18 @@ export async function getMongooseConnection(): Promise<typeof mongoose> {
   }
 
   if (!globalCache.promise) {
-    globalCache.promise = mongoose.connect(MONGODB_URI as string, {
-      // These options are safe defaults for MongoDB Atlas.
-      autoIndex: true,
-      maxPoolSize: 10,
-    });
+    globalCache.promise = mongoose
+      .connect(MONGODB_URI as string, {
+        autoIndex: true,
+        maxPoolSize: 10,
+        serverSelectionTimeoutMS: 15000, // Wait up to 15s for a server
+        socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
+      })
+      .catch((err) => {
+        // Clear the cached promise so the next invocation retries
+        globalCache.promise = null;
+        throw err;
+      });
   }
 
   globalCache.conn = await globalCache.promise;

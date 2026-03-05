@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe/stripe";
+import { getMongooseConnection } from "@/lib/db/mongoose";
 import {
   createBookingWithTransaction,
   BookingStripeInput,
@@ -13,6 +14,9 @@ export async function POST(req: Request) {
     console.error("Missing STRIPE_WEBHOOK_SECRET");
     return new NextResponse("Webhook Secret is missing", { status: 500 });
   }
+
+  // Ensure DB connection is warm before processing
+  await getMongooseConnection();
 
   const body = await req.text();
   const signature = headers().get("Stripe-Signature") as string;
