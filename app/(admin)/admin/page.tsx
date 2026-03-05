@@ -5,6 +5,8 @@ import { Product } from "@/lib/models/Product";
 import { getMonthlyRevenueData } from "./actions/analytics";
 import { RevenueChart } from "./components/RevenueChart";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminOverviewPage() {
   await getMongooseConnection();
 

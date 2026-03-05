@@ -2,6 +2,8 @@ import { getMongooseConnection } from "@/lib/db/mongoose";
 import { Customer } from "@/lib/models/Customer";
 import { Order } from "@/lib/models/Order";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminCustomersPage() {
   await getMongooseConnection();
 

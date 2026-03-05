@@ -4,6 +4,8 @@ import SeedProductsButton from "./SeedProductsButton";
 import Image from "next/image";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminProductsPage() {
   await getMongooseConnection();
   const products = await Product.find().sort({ createdAt: -1 }).lean();
