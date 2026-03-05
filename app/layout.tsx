@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import MobileNav from "@/components/MobileNav";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -38,7 +39,7 @@ export default function RootLayout({
                   </span>
                 </div>
               </Link>
-              <nav className="flex items-center gap-8 text-sm text-white/70">
+              <nav className="hidden items-center gap-8 text-sm text-white/70 md:flex">
                 <Link href="/" className="hover:text-white transition-colors">
                   Home
                 </Link>
@@ -49,6 +50,7 @@ export default function RootLayout({
                   Collections
                 </Link>
               </nav>
+              <MobileNav />
             </div>
           </header>
 

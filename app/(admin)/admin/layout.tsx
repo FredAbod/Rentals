@@ -1,3 +1,5 @@
+import AdminMobileNav from "@/components/AdminMobileNav";
+
 export default function AdminLayout({
   children,
 }: {
@@ -42,8 +44,9 @@ export default function AdminLayout({
           </a>
         </nav>
       </aside>
-      <div className="flex-1 px-6 py-6">
-        <header className="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+      <div className="flex-1 px-4 py-4 sm:px-6 sm:py-6">
+        <AdminMobileNav />
+        <header className="mb-6 mt-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-end md:mt-0">
           <div>
             <p className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-accent">
               Live operations

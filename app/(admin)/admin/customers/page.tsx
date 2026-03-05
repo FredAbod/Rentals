@@ -34,7 +34,7 @@ export default async function AdminCustomersPage() {
   return (
     <div className="space-y-4">
       <h2 className="text-sm font-semibold text-white">Customers</h2>
-      <div className="glass-surface overflow-hidden text-xs text-white/70">
+      <div className="glass-surface overflow-x-auto text-xs text-white/70">
         <table className="min-w-full border-collapse">
           <thead className="bg-white/5 text-[0.7rem] uppercase tracking-[0.18em]">
             <tr>
