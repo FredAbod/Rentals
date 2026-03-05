@@ -3,7 +3,7 @@ import { getMongooseConnection } from "@/lib/db/mongoose";
 import { Product } from "@/lib/models/Product";
 
 export async function GET(
-  request: Request,
+  _request: Request,
   { params }: { params: { id: string } },
 ) {
   try {
