@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { getMongooseConnection } from "@/lib/db/mongoose";
 import { Product } from "@/lib/models/Product";
-import { z } from "zod";
 
 export async function GET(
   request: Request,
