@@ -13,10 +13,12 @@ export default async function EditProductPage({
 
   if (!isNew) {
     await getMongooseConnection();
-    product = await Product.findById(params.id).lean();
-    if (!product) {
+    const doc = await Product.findById(params.id).lean();
+    if (!doc) {
       notFound();
     }
+    // Serialize Mongoose document to a plain JSON-safe object
+    product = JSON.parse(JSON.stringify(doc));
   }
 
   return (

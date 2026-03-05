@@ -1,9 +1,9 @@
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { SplineEmbed } from "@/components/3d/SplineEmbed";
+import ImageGallery from "@/components/ImageGallery";
 import { getMongooseConnection } from "@/lib/db/mongoose";
 import { Product } from "@/lib/models/Product";
 
@@ -41,8 +41,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
     <div className="mx-auto max-w-6xl px-6 pb-16 pt-10">
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
         <section className="space-y-6">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-white/5">
-            {product.threeDModelUrl ? (
+          {product.threeDModelUrl ? (
+            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-white/5">
               <Suspense
                 fallback={
                   <div className="flex h-full items-center justify-center text-xs text-white/60">
@@ -52,22 +52,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
               >
                 <ProductViewerR3F modelUrl={product.threeDModelUrl} />
               </Suspense>
-            ) : product.splineSceneUrl ? (
+            </div>
+          ) : product.splineSceneUrl ? (
+            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-white/5">
               <SplineEmbed sceneUrl={product.splineSceneUrl} />
-            ) : product.images[0] ? (
-              <Image
-                src={product.images[0]}
-                alt={product.name}
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 66vw"
-              />
-            ) : (
-              <div className="flex h-full items-center justify-center text-white/40">
-                No image
-              </div>
-            )}
-          </div>
+            </div>
+          ) : (
+            <ImageGallery images={product.images} productName={product.name} />
+          )}
           <article className="space-y-4">
             <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
               {product.name}

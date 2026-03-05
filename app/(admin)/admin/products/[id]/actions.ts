@@ -13,7 +13,7 @@ export async function saveProductAction(formData: FormData) {
     const name = formData.get("name") as string;
     const description = formData.get("description") as string;
     const category = formData.get("category") as string;
-    const image = formData.get("image") as string;
+    const imagesRaw = formData.get("images") as string;
     const baseDailyRateMinor = parseInt(
       formData.get("baseDailyRateMinor") as string,
       10,
@@ -23,6 +23,14 @@ export async function saveProductAction(formData: FormData) {
       10,
     );
     const totalQuantity = parseInt(formData.get("totalQuantity") as string, 10);
+
+    // Parse images JSON array
+    let images: string[] = [];
+    try {
+      images = JSON.parse(imagesRaw || "[]");
+    } catch {
+      images = [];
+    }
 
     // Auto-generate slug from name if new
     const slug = name
@@ -35,7 +43,7 @@ export async function saveProductAction(formData: FormData) {
       slug,
       description,
       category,
-      images: image ? [image] : [],
+      images,
       baseDailyRateMinor,
       securityDepositAmountMinor,
       totalQuantity,

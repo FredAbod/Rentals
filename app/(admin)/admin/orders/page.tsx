@@ -1,5 +1,6 @@
 import { getMongooseConnection } from "@/lib/db/mongoose";
 import { Order } from "@/lib/models/Order";
+import { Customer } from "@/lib/models/Customer";
 
 export default async function AdminOrdersPage() {
   await getMongooseConnection();
